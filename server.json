@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sepehr071/rasmio-mcp",
+  "title": "Rasmio Company Registry",
+  "description": "Read-only Rasmio (rasmio.com): Iranian companies, board members, gazette ads, products, brands.",
+  "repository": {
+    "url": "https://github.com/sepehr071/rasmio-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/sepehr071/rasmio-mcp",
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "rasmio-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RASMIO_MCP_PROXY",
+          "description": "Optional HTTP proxy URL for the Rasmio requests; system proxy settings are ignored. Also accepts a comma-separated list: one is used until it gets blocked or fails to connect, then the next.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
