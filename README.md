@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/sepehr071/rasmio-mcp/main/.github/banner.png" alt="rasmio-mcp: unofficial Rasmio (رسمیو) MCP server that looks up Iranian companies, board members, shareholders and official gazette ads for Claude, Cursor and Copilot" width="100%">
+
 # rasmio-mcp: Rasmio (رسمیو) Iranian company registry MCP server for AI agents
 
 **rasmio-mcp is an unofficial, read-only MCP server that gives AI agents Rasmio, the registry of Iranian companies.**<br>
