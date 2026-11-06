@@ -1,6 +1,6 @@
 [project]
 name = "rasmio-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Unofficial read-only MCP server for Rasmio (rasmio.com), Iran's company registry: companies, board members, official gazette ads, products, brands."
 readme = "README.md"
 license = "MIT"
