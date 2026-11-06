@@ -59,13 +59,12 @@ def parse_person(html: str) -> dict[str, Any]:
 async def rs_person(
     person_id: Annotated[
         str,
-        Field(description="Hex person id from rs_search(kind='people') or a board row of rs_company, e.g. '3706E5AB'."),
+        Field(description="Hex id from rs_search(kind='people') or rs_company, e.g. '3706E5AB'."),
     ],
 ) -> dict[str, Any]:
     """Companies one person manages, sits on the board of or audits, with role dates and their latest gazette ads.
 
-    current=false marks a finished term. ad_id points to the gazette notice behind each role (open with rs_ad);
-    company_id opens the company with rs_company. Contact details and national codes are not returned.
+    current=false is a finished term; ad_id opens with rs_ad.
     """
     pid = clean(person_id).strip().upper()
     if not re.fullmatch(r"[0-9A-F]{4,12}", pid):

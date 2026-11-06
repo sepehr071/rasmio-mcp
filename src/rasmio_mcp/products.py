@@ -62,13 +62,12 @@ def parse_product(html: str, max_rows: int = 10) -> dict[str, Any]:
 
 @tool("Product details")
 async def rs_product(
-    product_id: Annotated[str, Field(description="Product id from rs_search(kind='products'), e.g. '42218435'.")],
+    product_id: Annotated[str, Field(description="Id from rs_search(kind='products'), e.g. '42218435'.")],
     max_rows: Annotated[int, Field(description="Rows of the similar-suppliers table.", ge=1, le=50)] = 10,
 ) -> dict[str, Any]:
     """One registered product: full specs (HS/ISIC codes, brand, maker, country), category and comparable suppliers.
 
-    similar_suppliers lists other companies with the same or a close product (company_id for rs_company). The
-    category_slug works as product_category in rs_search_companies to find every supplier of the category.
+    category_slug works as product_category in rs_search_companies.
     """
     pid = re.sub(r"\D", "", clean(product_id))
     if not pid:
@@ -80,11 +79,11 @@ async def rs_product(
 async def rs_ip(
     ip_id: Annotated[
         str,
-        Field(description="ip_id from rs_search(kind='brands' or 'patents') or a brand in rs_company, e.g. '812386'."),
+        Field(description="ip_id from rs_search or rs_company, e.g. '812386'."),
     ],
     kind: Annotated[
         Literal["brand", "patent", "industrial_design"],
-        Field(description="Record type, as the search result's kind says."),
+        Field(description="The search result's kind."),
     ] = "brand",
 ) -> dict[str, Any]:
     """Registration details of an Iranian trademark, patent or industrial design: numbers, date, owner, description."""

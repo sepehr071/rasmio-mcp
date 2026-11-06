@@ -16,14 +16,6 @@ Unofficial, read-only access to Rasmio (رسمیو, rasmio.com), a registry of I
 gazette (روزنامه رسمی), the company registration office and other public sources: the same public pages anyone sees
 without an account. Nothing here can log in, subscribe or edit.
 
-Tools: rs_search_companies (name/activity plus filters: province, city, status, legal form, size, capital, founding
-date, license, product category -> company_id), rs_company (one company: basics, board and CEO, other officers,
-auditors, signature rule, shareholders, stock portfolio, licenses, brands, patents, capital changes, contracts, codal
-statements, latest gazette ads), rs_ad (full text of one gazette ad), rs_search (people, products, brands, patents),
-rs_person (a person's roles across companies), rs_product (a product's specs and comparable suppliers), rs_ip
-(trademark, patent or industrial design), rs_options (ids for the filters: legal forms, licenses, categories, brand
-classes, provinces).
-
 Typical flows: "who runs company X" -> rs_search_companies("X") -> rs_company(company_id, sections=["people"]).
 "Which companies is person Y on the board of" -> rs_search("Y", kind="people") -> rs_person(person_id).
 "Knowledge-based software firms in Isfahan" -> rs_options("licenses", "دانش بنیان") -> rs_search_companies(query="نرم افزار",

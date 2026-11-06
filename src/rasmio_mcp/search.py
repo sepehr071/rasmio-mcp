@@ -120,61 +120,45 @@ async def _search(params: dict, page: int, size: int) -> dict:
 async def rs_search_companies(
     query: Annotated[
         str,
-        Field(
-            description="Name, brand or activity words in Persian, e.g. 'نرم افزار' or 'دیجی کالا'. Empty = filters only."
-        ),
+        Field(description="Persian name, brand or activity words, e.g. 'دیجی کالا'. Empty = filters only."),
     ] = "",
     province: Annotated[
         str | None,
-        Field(description="Registered province, Persian name as the site writes it, e.g. 'تهران', 'اصفهان'."),
+        Field(description="Persian province name, e.g. 'تهران'."),
     ] = None,
-    city: Annotated[str | None, Field(description="Registered city, Persian name, e.g. 'مشهد'.")] = None,
-    status: Annotated[
-        Literal["active", "tax_inactive", "liquidated", "incomplete_data", "revoked", "license_ended", "inactive"]
-        | None,
-        Field(description="Company status."),
-    ] = None,
+    city: Annotated[str | None, Field(description="Persian city name, e.g. 'مشهد'.")] = None,
+    status: Literal["active", "tax_inactive", "liquidated", "incomplete_data", "revoked", "license_ended", "inactive"]
+    | None = None,
     company_type: Annotated[
         int | None,
         Field(
-            description="Legal form id from rs_options('company_types'); 5 = سهامی خاص, 6 = با مسئولیت محدود, 3 = تعاونی."
+            description="Legal form id (rs_options 'company_types'); 5 = سهامی خاص, 6 = با مسئولیت محدود, 3 = تعاونی."
         ),
     ] = None,
     size: Annotated[
-        Literal["xs", "s", "m", "l", "xl"] | None, Field(description="Headcount class: xs very small .. xl very large.")
+        Literal["xs", "s", "m", "l", "xl"] | None, Field(description="Headcount class, xs smallest .. xl largest.")
     ] = None,
-    min_capital: Annotated[
-        int | None, Field(description="Minimum registered capital in Rial, e.g. 10000000000.", ge=0)
-    ] = None,
-    max_capital: Annotated[int | None, Field(description="Maximum registered capital in Rial.", ge=0)] = None,
+    min_capital: Annotated[int | None, Field(description="Minimum capital, Rial.", ge=0)] = None,
+    max_capital: Annotated[int | None, Field(description="Maximum capital, Rial.", ge=0)] = None,
     founded_after: Annotated[
-        str | None, Field(description="Registration date from, Persian '1400/01/01' or Gregorian '2021-03-21'.")
+        str | None, Field(description="Registered on/after; '1400/01/01' or '2021-03-21'.")
     ] = None,
-    founded_before: Annotated[str | None, Field(description="Registration date to, same formats.")] = None,
-    license_id: Annotated[
-        str | None, Field(description="Only companies holding this license; id from rs_options('licenses', query).")
-    ] = None,
+    founded_before: Annotated[str | None, Field(description="Registered on/before, same formats.")] = None,
+    license_id: Annotated[str | None, Field(description="License id from rs_options('licenses').")] = None,
     product_category: Annotated[
         str | None,
-        Field(
-            description="Only suppliers in this product category slug, from rs_options('categories') or a product's category_slug."
-        ),
+        Field(description="Product category slug (rs_options 'categories' or a product's category_slug)."),
     ] = None,
-    has_brand: Annotated[bool, Field(description="Only companies that own a registered trademark.")] = False,
-    has_subsidiary: Annotated[bool, Field(description="Only companies with subsidiaries.")] = False,
-    has_contract: Annotated[bool, Field(description="Only companies with recorded government contracts.")] = False,
-    sort: Annotated[
-        Literal["relevance", "most_viewed", "newest", "oldest", "lowest_capital", "highest_capital"],
-        Field(description="Order of results."),
-    ] = "relevance",
-    page: Annotated[int, Field(description="Result page, from 1.", ge=1, le=200)] = 1,
-    page_size: Annotated[int, Field(description="Results per page.", ge=1, le=60)] = 20,
+    has_brand: Annotated[bool, Field(description="Owns a trademark.")] = False,
+    has_subsidiary: Annotated[bool, Field(description="Has subsidiaries.")] = False,
+    has_contract: Annotated[bool, Field(description="Has government contracts.")] = False,
+    sort: Literal["relevance", "most_viewed", "newest", "oldest", "lowest_capital", "highest_capital"] = "relevance",
+    page: Annotated[int, Field(ge=1, le=200)] = 1,
+    page_size: Annotated[int, Field(ge=1, le=60)] = 20,
 ) -> dict[str, Any]:
     """Search Iranian companies by name or activity with filters; returns national ids for rs_company.
 
-    Each result has the company's national id (company_id, شناسه ملی), name, age/capital summary, CEO and up to 5
-    licenses. Combine filters freely, e.g. active software companies in Isfahan with capital over 10 billion Rial.
-    Next: rs_company(company_id) for the full registry profile (board, shareholders, gazette ads).
+    Filters combine freely. Next: rs_company(company_id).
     """
     extra = {
         "companystatus": STATUSES.get(status) if status else None,
@@ -203,32 +187,26 @@ async def rs_search_companies(
 
 @tool("Search people, products, brands or patents")
 async def rs_search(
-    query: Annotated[
-        str, Field(description="Words in Persian (or Latin for brands), e.g. 'ملک نژاد', 'روغن موتور', 'Samsung'.")
-    ],
+    query: Annotated[str, Field(description="Persian words (Latin for brands), e.g. 'روغن موتور', 'Samsung'.")],
     kind: Annotated[
         Literal["people", "products", "brands", "patents", "everything"],
-        Field(description="What to search. 'everything' mixes companies, people, brands and products."),
+        Field(description="'everything' mixes companies, people, brands, products."),
     ] = "people",
     product_category: Annotated[
         str | None,
-        Field(description="products only: category slug from rs_options('categories'), e.g. 'metals-chemicals'."),
+        Field(description="products only: slug from rs_options('categories')."),
     ] = None,
     brand_class: Annotated[
-        int | None, Field(description="brands only: Nice class 1-45, e.g. 9 = electronics, 30 = foods.", ge=1, le=45)
+        int | None, Field(description="brands only: Nice class, 9 = electronics, 30 = foods.", ge=1, le=45)
     ] = None,
-    mark_type: Annotated[
-        Literal["image", "text", "combined"] | None, Field(description="brands only: kind of mark.")
-    ] = None,
+    mark_type: Annotated[Literal["image", "text", "combined"] | None, Field(description="brands only.")] = None,
     patent_kind: Annotated[Literal["invention", "industrial_design"] | None, Field(description="patents only.")] = None,
-    page: Annotated[int, Field(description="Result page, from 1.", ge=1, le=200)] = 1,
-    page_size: Annotated[int, Field(description="Results per page.", ge=1, le=60)] = 20,
+    page: Annotated[int, Field(ge=1, le=200)] = 1,
+    page_size: Annotated[int, Field(ge=1, le=60)] = 20,
 ) -> dict[str, Any]:
     """Search people (board members, managers), products, registered brands or patents and industrial designs.
 
-    People results give person_id for rs_person and the companies they sit in. Products give product_id for
-    rs_product and the supplier's company_id. Brands and patents give ip_id for rs_ip. For companies use
-    rs_search_companies (it has filters).
+    Gives person_id (rs_person), product_id (rs_product) or ip_id (rs_ip). For companies use rs_search_companies.
     """
     if not query.strip():
         raise ApiError("Give a search word.")
@@ -256,27 +234,20 @@ async def rs_search(
 async def rs_options(
     what: Annotated[
         Literal["company_types", "licenses", "categories", "brand_classes", "provinces"],
-        Field(
-            description="Which list: company legal forms, license names (needs query), product categories, trademark classes, provinces with their cities."
-        ),
+        Field(description="licenses needs query; provinces include their cities."),
     ],
     query: Annotated[
         str | None,
-        Field(
-            description="licenses: words of the license name, e.g. 'دانش بنیان', 'ایزو'. company_types/provinces: optional text filter."
-        ),
+        Field(description="licenses: license-name words, e.g. 'دانش بنیان'. Others: optional text filter."),
     ] = None,
     category: Annotated[
         str | None,
-        Field(
-            description="categories: a category slug to list its sub-categories, e.g. 'metals-chemicals'. Empty = top level."
-        ),
+        Field(description="categories: slug to list its sub-categories. Empty = top level."),
     ] = None,
 ) -> dict[str, Any]:
     """List the ids and names the search filters take: legal forms, licenses, product categories, brand classes.
 
-    Use the returned id/slug in rs_search_companies (company_type, license_id, product_category, province, city)
-    or rs_search (product_category, brand_class). counts are how many companies or products carry each value.
+    Use the id/slug in rs_search_companies or rs_search filters.
     """
     q = (query or "").strip()
     if what == "licenses":

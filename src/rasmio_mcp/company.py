@@ -146,24 +146,19 @@ def parse_company(html: str, max_rows: int = 10) -> dict[str, Any]:
 async def rs_company(
     company_id: Annotated[
         str,
-        Field(
-            description="The company's 11-digit national id (شناسه ملی), e.g. '10100360794'. Get it from rs_search_companies."
-        ),
+        Field(description="11-digit national id (شناسه ملی) from rs_search_companies, e.g. '10100360794'."),
     ],
     sections: Annotated[
         list[SECTIONS] | None,
-        Field(
-            description="Parts to return besides the basics: people (board, officers, auditors, signature rule), ownership (shareholders, stock portfolio), licenses (licenses, brands, patents), finance (capital changes, contracts, codal statements), ads (latest gazette ads). Empty = all."
-        ),
+        Field(description="Parts besides the basics; empty = all."),
     ] = None,
     max_rows: Annotated[int, Field(description="Rows per table.", ge=1, le=30)] = 10,
 ) -> dict[str, Any]:
     """Registry profile of one Iranian company: basics, board and CEO, shareholders, licenses, capital history, ads.
 
-    Basics: founding date, status, legal form, registration number, economic code, capital in Rial, activity,
-    address and postal code. Board rows give person_id for rs_person and ad_id for rs_ad (the gazette notice that
-    appointed them). Anonymous visitors may open only a few profiles per IP address every few days; a clear
-    error says when that limit is reached (search still works then). Dates are Persian (1404/06/26).
+    sections: people=board/officers/auditors, ownership=shareholders/stock, licenses=licenses/brands/patents,
+    finance=capital changes/contracts/statements, ads. Board rows give person_id (rs_person) and ad_id (rs_ad). Anonymous quota is a few profiles per IP every few
+    days; the error says when it is reached.
     """
     html = await fetch(f"/company/{_id(company_id)}/direct/")
     data = parse_company(html, max_rows)
@@ -178,12 +173,12 @@ async def rs_company(
 async def rs_ad(
     ad_id: Annotated[
         str,
-        Field(description="Ad id from rs_company recent_ads, a board row's ad_id or rs_person ads, e.g. '129676674'."),
+        Field(description="Ad id from rs_company or rs_person, e.g. '129676674'."),
     ],
 ) -> dict[str, Any]:
     """Full text of one official gazette (روزنامه رسمی) ad: board changes, capital changes, founding, liquidation.
 
-    People's national codes in the text are shortened to their first 6 digits, as the site shows them.
+    National codes in the text are shortened to 6 digits.
     """
     aid = re.sub(r"\D", "", clean(ad_id))
     if not aid:
